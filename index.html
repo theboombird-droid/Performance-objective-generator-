@@ -248,29 +248,6 @@ function buildByClause(gerund, resourcesRaw) {
       return `by ${gerund} ${resNP}`;
   }
 }
-
-  if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
-    if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
-    if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
-  }
-
-  if (/(citing|quoting|drawing from|sourcing)/.test(g)) {
-    return `by ${gerund} from ${resNP}`;
-  }
-
-  switch (cat) {
-    case "texts":
-    case "data":
-    case "lab":
-      return `by ${gerund} using ${resNP}`;
-    case "media":
-    case "visuals":
-    case "maps":
-      return `by ${gerund} with ${resNP}`;
-    default:
-      return `by ${gerund} ${resNP}`;
-  }
-}
     // Elements
     const topicSel = document.getElementById('topic');
     const topicCustom = document.getElementById('topicCustom');
