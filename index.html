@@ -1,440 +1,417 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <title>Performance Objective Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    :root{--bg:#fff;--fg:#111;--muted:#666;--border:#ddd;--card:#f7f7f7}
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:16px;background:var(--bg);color:var(--fg)}
-    .wrap{max-width:860px;margin:0 auto}
-    .card{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:#fff}
-    .content{padding:16px}
-    label{display:block;font-size:13px;font-weight:600;margin:10px 0 6px}
-    input,select,button{font:inherit}
-    input,select{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px}
-    .row{display:grid;gap:10px}
-    .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-    button{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer}
-    button:disabled{opacity:.5;cursor:not-allowed}
-    .preview{background:var(--card);border-radius:10px;padding:12px;min-height:48px}
-    .muted{color:var(--muted);font-size:12px}
-    .grid{display:grid;grid-template-columns:1fr;gap:12px}
-    @media(min-width:960px){.grid{grid-template-columns:1.2fr .8fr}}
-    .pyramid{display:grid;place-items:center;margin-top:8px}
-    .verbs{font-size:12px;line-height:1.5}
-    .verbs details{border:1px solid var(--border);border-radius:8px;padding:10px;background:#fff}
-    .verbs summary{font-weight:600;cursor:pointer}
-  </style>
+  <meta charset="utf-8" />
+  <title>Performance Objective Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root{--bg:#fff;--fg:#111;--muted:#666;--border:#ddd;--card:#f7f7f7}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;margin:0;padding:16px;background:var(--bg);color:var(--fg)}
+    .wrap{max-width:860px;margin:0 auto}
+    .card{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:#fff}
+    .content{padding:16px}
+    label{display:block;font-size:13px;font-weight:600;margin:10px 0 6px}
+    input,select,button{font:inherit}
+    input,select{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px}
+    .row{display:grid;gap:10px}
+    .btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+    button{padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;cursor:pointer}
+    button:disabled{opacity:.5;cursor:not-allowed}
+    .preview{background:var(--card);border-radius:10px;padding:12px;min-height:48px}
+    .muted{color:var(--muted);font-size:12px}
+    .grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media(min-width:960px){.grid{grid-template-columns:1.2fr .8fr}}
+    .pyramid{display:grid;place-items:center;margin-top:8px}
+    .verbs{font-size:12px;line-height:1.5}
+    .verbs details{border:1px solid var(--border);border-radius:8px;padding:10px;background:#fff}
+    .verbs summary{font-weight:600;cursor:pointer}
+  </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>Performance Objective Generator</h1>
-    <p class="muted">Use the dropdowns or type your own. The objective adapts grammar automatically.</p>
+  <div class="wrap">
+    <h1>Performance Objective Generator</h1>
+    <p class="muted">Use the dropdowns or type your own. The objective adapts grammar automatically.</p>
 
-    <div class="grid">
-      <!-- FORM -->
-      <div>
-        <div class="card"><div class="content">
-          <div class="row">
-         <label for="topic">Content Topic</label>
-<input type="text" id="topic" placeholder="e.g., Causes of the French Revolution" />
-          </div>
+    <div class="grid">
+      <!-- FORM -->
+      <div>
+        <div class="card"><div class="content">
+          <div class="row">
+            <label for="topic">Content Topic</label>
+            <input type="text" id="topic" placeholder="e.g., Causes of the French Revolution" />
+          </div>
 
-          <div class="row">
-            <label for="resources">Resources</label>
-            <select id="resources">
-              <option>primary sources</option>
-              <option>maps</option>
+          <div class="row">
+            <label for="resources">Resources</label>
+            <select id="resources">
+              <option>primary sources</option>
+              <option>maps</option>
               <option>secondary sources</option>
               <option>political cartoons</option>
               <option>scientific evidence</option>
               <option>historical evidence</option>
               <option>mathematical concepts</option>
-              <option>short stories</optoon>
-              <option>data sets</option>
-              <option>graphs</option>
-              <option>lab results</option>
-              <option>editorial articles</option>
-              <option>video clips</option>
-              <option>case studies</option>
-              <option>textbook excerpts</option>
-              <option value="__custom__">Custom…</option>
-            </select>
-            <input id="resourcesCustom" placeholder="Type custom resources" style="display:none" />
-          </div>
+              <option>short stories</option>
+              <option>data sets</option>
+              <option>graphs</option>
+              <option>lab results</option>
+              <option>editorial articles</option>
+              <option>video clips</option>
+              <option>case studies</option>
+              <option>textbook excerpts</option>
+              <option value="__custom__">Custom…</option>
+            </select>
+            <input id="resourcesCustom" placeholder="Type custom resources" style="display:none" />
+          </div>
 
-          <div class="row">
-            <label for="assessment">Assessment / Output Evidence</label>
-            <select id="assessment">
-              <option>a written paragraph</option>
-              <option>a CER response</option>
-              <option>a graphic organizer</option>
-              <option>a debate claim with rebuttal</option>
+          <div class="row">
+            <label for="assessment">Assessment / Output Evidence</label>
+            <select id="assessment">
+              <option>a written paragraph</option>
+              <option>a CER response</option>
+              <option>a graphic organizer</option>
+              <option>a debate claim with rebuttal</option>
               <option>a concept map</option>
               <option>a class debate</option>
-              <option>an annotated timeline</option>
-              <option>a presentation)</option>
-              <option>a one-pager with citations</option>
-              <option>a ranked list with justification</option>
-               <option>a problem set with solutions</option>
-               <option>a step-by-step proof</option>
-               <option>a graph with interpretation</option>
-               <option>a statistical analysis</option>
+              <option>an annotated timeline</option>
+              <option>a presentation</option>
+              <option>a one-pager with citations</option>
+              <option>a ranked list with justification</option>
+              <option>a problem set with solutions</option>
+              <option>a step-by-step proof</option>
+              <option>a graph with interpretation</option>
+              <option>a statistical analysis</option>
               <option>a formula derivation</option>
-               <option>a model of a real-world scenario</option>
-              <option value="__custom__">Custom…</option>
-            </select>
-            <input id="assessmentCustom" placeholder="Type a custom assessment" style="display:none" />
-          </div>
+              <option>a model of a real-world scenario</option>
+              <option value="__custom__">Custom…</option>
+            </select>
+            <input id="assessmentCustom" placeholder="Type a custom assessment" style="display:none" />
+          </div>
 
-          <div class="row">
-            <label for="bloom">Bloom’s Level</label>
-            <select id="bloom">
-              <option>Evaluate</option>
-              <option>Analyze</option>
-              <option>Understand</option>
-              <option>Apply</option>
-              <option>Remember</option>
-              <option>Create</option>
-            </select>
-            <label for="levelNum" class="muted">Numeric override (level 1–6)</label>
-            <input id="levelNum" placeholder="e.g., level 5" />
-          </div>
-        </div></div>
+          <div class="row">
+            <label for="bloom">Bloom’s Level</label>
+            <select id="bloom">
+              <option>Evaluate</option>
+              <option>Analyze</option>
+              <option>Understand</option>
+              <option>Apply</option>
+              <option>Remember</option>
+              <option>Create</option>
+            </select>
+            <label for="levelNum" class="muted">Numeric override (level 1–6)</label>
+            <input id="levelNum" placeholder="e.g., level 5" />
+          </div>
+        </div></div>
 
-        <div class="card"><div class="content">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <strong>Generated Performance Objective</strong>
-          </div>
-          <div id="preview" class="preview"><span class="muted">Your objective will appear here…</span></div>
-          <div class="btns">
-            <button id="copyBtn" disabled>Copy</button>
-            <button id="resetBtn">Reset</button>
-          </div>
-          <p class="muted" style="margin-top:8px">
-            Formula: <code>Students will [Bloom’s verb] [content topic] by [gerund (different Bloom stem)] [resources] in order to [assessment].</code>
-          </p>
-        </div></div>
-      </div>
+        <div class="card"><div class="content">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <strong>Generated Performance Objective</strong>
+          </div>
+          <div id="preview" class="preview"><span class="muted">Your objective will appear here…</span></div>
+          <div class="btns">
+            <button id="copyBtn" disabled>Copy</button>
+            <button id="resetBtn">Reset</button>
+          </div>
+          <p class="muted" style="margin-top:8px">
+            Formula: <code>Students will [Bloom’s verb] [content topic] by [gerund (different Bloom stem)] [resources] in order to [assessment].</code>
+          </p>
+        </div></div>
+      </div>
 
-      <!-- BLOOM GUIDE -->
-      <div>
-        <div class="card"><div class="content">
-          <strong>Bloom’s Taxonomy</strong>
-          <div class="pyramid">
-            <svg viewBox="0 0 200 140" width="260" height="182" aria-label="Bloom's Pyramid">
-              <polygon points="100,10 10,130 190,130" fill="#eaeaea" stroke="#bbb"></polygon>
-              <line x1="30" y1="110" x2="170" y2="110" stroke="#bbb"></line>
-              <line x1="40" y1="92" x2="160" y2="92" stroke="#bbb"></line>
-              <line x1="50" y1="76" x2="150" y2="76" stroke="#bbb"></line>
-              <line x1="60" y1="62" x2="140" y2="62" stroke="#bbb"></line>
-              <line x1="70" y1="50" x2="130" y2="50" stroke="#bbb"></line>
-              <text x="100" y="122" text-anchor="middle" font-size="10">Remember (1)</text>
-              <text x="100" y="104" text-anchor="middle" font-size="10">Understand (2)</text>
-              <text x="100" y="88" text-anchor="middle" font-size="10">Apply (3)</text>
-              <text x="100" y="72" text-anchor="middle" font-size="10">Analyze (4)</text>
-              <text x="100" y="58" text-anchor="middle" font-size="10">Evaluate (5)</text>
-              <text x="100" y="44" text-anchor="middle" font-size="10">Create (6)</text>
-            </svg>
-          </div>
+      <!-- BLOOM GUIDE -->
+      <div>
+        <div class="card"><div class="content">
+          <strong>Bloom’s Taxonomy</strong>
+          <div class="pyramid">
+            <svg viewBox="0 0 200 140" width="260" height="182" aria-label="Bloom's Pyramid">
+              <polygon points="100,10 10,130 190,130" fill="#eaeaea" stroke="#bbb"></polygon>
+              <line x1="30" y1="110" x2="170" y2="110" stroke="#bbb"></line>
+              <line x1="40" y1="92" x2="160" y2="92" stroke="#bbb"></line>
+              <line x1="50" y1="76" x2="150" y2="76" stroke="#bbb"></line>
+              <line x1="60" y1="62" x2="140" y2="62" stroke="#bbb"></line>
+              <line x1="70" y1="50" x2="130" y2="50" stroke="#bbb"></line>
+              <text x="100" y="122" text-anchor="middle" font-size="10">Remember (1)</text>
+              <text x="100" y="104" text-anchor="middle" font-size="10">Understand (2)</text>
+              <text x="100" y="88" text-anchor="middle" font-size="10">Apply (3)</text>
+              <text x="100" y="72" text-anchor="middle" font-size="10">Analyze (4)</text>
+              <text x="100" y="58" text-anchor="middle" font-size="10">Evaluate (5)</text>
+              <text x="100" y="44" text-anchor="middle" font-size="10">Create (6)</text>
+            </svg>
+          </div>
 
-          <div class="verbs" id="verbsList" style="margin-top:8px"></div>
-        </div></div>
-      </div>
-    </div>
-  </div>
+          <div class="verbs" id="verbsList" style="margin-top:8px"></div>
+        </div></div>
+      </div>
+    </div>
+  </div>
 
-  <script>
-    // Data
-    const VERBS = {
-      Remember: ["Identify","Recall","List","Define","Name","Recognize"],
-      Understand: ["Explain","Describe","Summarize","Interpret","Classify","Discuss"],
-      Apply: ["Apply","Demonstrate","Use","Execute","Implement","Solve"],
-      Analyze: ["Analyze","Examine","Compare","Contrast","Differentiate","Categorize"],
-      Evaluate: ["Evaluate","Argue","Justify","Defend","Prioritize","Assess","Appraise"],
-      Create: ["Create","Design","Compose","Develop","Construct","Produce"]
-    };
-    const GERUNDS = {
-      Remember: ["recalling","listing","naming"],
-      Understand: ["explaining","summarizing","describing"],
-      Apply: ["demonstrating","applying","using"],
-      Analyze: ["examining","comparing","contrasting","categorizing"],
-      Evaluate: ["arguing","justifying","defending","prioritizing","assessing","appraising"],
-      Create: ["designing","composing","producing","creating","developing"]
-    };
-// Helpers for smarter grammar
-function isMassOrPlural(s) {
-  const x = (s || "").trim().toLowerCase();
-  if (!x) return false;
+  <script>
+    /* --- show any JS error in the preview (handy on mobile) --- */
+    window.addEventListener("error", (e) => {
+      const p = document.getElementById("preview");
+      if (p) p.textContent = "Error: " + (e.error?.message || e.message);
+    });
 
-  // Mass nouns that should never get "a"/"an"
-  if (/\b(evidence|research|information|homework|equipment|literature|news|progress|energy|scaffolding)\b/.test(x)) return true;
+    // Data
+    const VERBS = {
+      Remember: ["Identify","Recall","List","Define","Name","Recognize"],
+      Understand: ["Explain","Describe","Summarize","Interpret","Classify","Discuss"],
+      Apply: ["Apply","Demonstrate","Use","Execute","Implement","Solve"],
+      Analyze: ["Analyze","Examine","Compare","Contrast","Differentiate","Categorize"],
+      Evaluate: ["Evaluate","Argue","Justify","Defend","Prioritize","Assess","Appraise"],
+      Create: ["Create","Design","Compose","Develop","Construct","Produce"]
+    };
+    const GERUNDS = {
+      Remember: ["recalling","listing","naming"],
+      Understand: ["explaining","summarizing","describing"],
+      Apply: ["demonstrating","applying","using"],
+      Analyze: ["examining","comparing","contrasting","categorizing"],
+      Evaluate: ["arguing","justifying","defending","prioritizing","assessing","appraising"],
+      Create: ["designing","composing","producing","creating","developing"]
+    };
 
-  // Common plurals or treated-as-plural
-  if (/\bdata\b/.test(x)) return true;
-  if (/\b(results|sources|maps|graphs|charts|tables|notes|clips|studies|images|articles)\b/.test(x)) return true;
+    // Grammar helpers
+    function isMassOrPlural(s) {
+      const x = (s || "").trim().toLowerCase();
+      if (!x) return false;
+      if (/\b(evidence|research|information|homework|equipment|literature|news|progress|energy|scaffolding)\b/.test(x)) return true;
+      if (/\bdata\b/.test(x)) return true;
+      if (/\b(results|sources|maps|graphs|charts|tables|notes|clips|studies|images|articles)\b/.test(x)) return true;
+      if (/\w+s\b/.test(x) && !/\b(analysis|thesis|basis|crisis|hypothesis)\b/.test(x)) return true;
+      return false;
+    }
 
-  // Ends in "s" (but not words like analysis/thesis)
-  if (/\w+s\b/.test(x) && !/\b(analysis|thesis|basis|crisis|hypothesis)\b/.test(x)) return true;
+    function articleize(phrase) {
+      const s = (phrase || "").trim();
+      if (!s) return "";
+      if (/^(the|a|an|some|any|this|that|these|those|my|your|his|her|our|their)\s/i.test(s)) return s;
+      if (/^[A-Z]/.test(s) && /\bof\b/i.test(s)) return s;        // "Causes of Rome"
+      if (/^[A-Z][A-Za-z-]+$/.test(s)) return s;                   // "Mesopotamia"
+      if (isMassOrPlural(s)) return s;                             // mass/plural
+      return /^[aeiou]/i.test(s) ? `an ${s}` : `a ${s}`;           // default
+    }
 
-  return false;
-}
+    function classifyResource(res) {
+      const r = (res || "").toLowerCase();
+      if (!r) return "none";
+      if (/primary sources|sources?|documents?|textbook|articles?|excerpts?|readings?/.test(r)) return "texts";
+      if (/data|dataset|statistics|stats|table|chart|graph|figures?/.test(r)) return "data";
+      if (/map|atlas|geograph/.test(r)) return "maps";
+      if (/video|clip|audio|podcast|recording/.test(r)) return "media";
+      if (/image|photo|cartoon|diagram|poster|picture|visual/.test(r)) return "visuals";
+      if (/lab|experiment|results?/.test(r)) return "lab";
+      return "generic";
+    }
 
-function articleize(phrase) {
-  const s = (phrase || "").trim();
-  if (!s) return "";
+    function buildByClause(gerund, resourcesRaw) {
+      const g = (gerund || "").toLowerCase();
+      const resNP = articleize(resourcesRaw);
+      if (!resourcesRaw) return `by ${gerund}`;
 
-  // Already has article/determiner
-  if (/^(the|a|an|some|any|this|that|these|those|my|your|his|her|our|their)\s/i.test(s)) return s;
+      const cat = classifyResource(resourcesRaw);
 
-  // Proper nouns/titles (capitalized or "of" phrases)
-  if (/^[A-Z]/.test(s) && /\bof\b/i.test(s)) return s;
-  if (/^[A-Z][A-Za-z-]+$/.test(s)) return s;
+      // Analysis verbs → direct object; no preposition; mass/plural keeps no article
+      if (/(examining|analyzing|comparing|contrasting|categorizing)/.test(g)) {
+        const np = isMassOrPlural(resourcesRaw) ? resourcesRaw : articleize(resourcesRaw);
+        return `by ${gerund} ${np}`;
+      }
 
-  // Mass or plural → no article
-  if (isMassOrPlural(s)) return s;
+      // Argument/Evaluation → using (texts/data/lab) or with (media/maps/visuals)
+      if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
+        if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
+        if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
+      }
 
-  // Default: add article
-  return /^[aeiou]/i.test(s) ? `an ${s}` : `a ${s}`;
-}
-function classifyResource(res) {
-  const r = (res || "").toLowerCase();
-  if (!r) return "none";
-  if (/primary sources|sources?|documents?|textbook|articles?|excerpts?|readings?/.test(r)) return "texts";
-  if (/data|dataset|statistics|stats|table|chart|graph|figures?/.test(r)) return "data";
-  if (/map|atlas|geograph/.test(r)) return "maps";
-  if (/video|clip|audio|podcast|recording/.test(r)) return "media";
-  if (/image|photo|cartoon|diagram|poster|picture|visual/.test(r)) return "visuals";
-  if (/lab|experiment|results?/.test(r)) return "lab";
-  return "generic";
-}
+      // Citation-like gerunds
+      if (/(citing|quoting|drawing from|sourcing)/.test(g)) {
+        return `by ${gerund} from ${resNP}`;
+      }
 
-function buildByClause(gerund, resourcesRaw) {
-  const g = (gerund || "").toLowerCase();
-  const resNP = articleize(resourcesRaw);
-  if (!resourcesRaw) return `by ${gerund}`;
+      // Fallbacks
+      switch (cat) {
+        case "texts":
+        case "data":
+        case "lab":
+          return `by ${gerund} using ${resNP}`;
+        case "media":
+        case "visuals":
+        case "maps":
+          return `by ${gerund} with ${resNP}`;
+        default:
+          return `by ${gerund} ${resNP}`;
+      }
+    }
 
-  const cat = classifyResource(resourcesRaw);
+    // Elements
+    const topicSel = document.getElementById('topic');
+    const resourcesSel = document.getElementById('resources');
+    const resourcesCustom = document.getElementById('resourcesCustom');
+    const assessSel = document.getElementById('assessment');
+    const assessCustom = document.getElementById('assessmentCustom');
+    const bloomSel = document.getElementById('bloom');
+    const levelNum = document.getElementById('levelNum');
+    const preview = document.getElementById('preview');
+    const copyBtn = document.getElementById('copyBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const verbsList = document.getElementById('verbsList');
 
-  // Analysis verbs → direct object; no preposition; no article for mass/plural
-  if (/(examining|analyzing|comparing|contrasting|categorizing)/.test(g)) {
-    const np = isMassOrPlural(resourcesRaw) ? resourcesRaw : articleize(resourcesRaw);
-    return `by ${gerund} ${np}`;
-  }
+    // Bloom helpers
+    const RANK = {Remember:1, Understand:2, Apply:3, Analyze:4, Evaluate:5, Create:6};
+    const rankToLevel = n => ({1:"Remember",2:"Understand",3:"Apply",4:"Analyze",5:"Evaluate",6:"Create"}[n]||"Analyze");
+    const stem = s => (s||"").toLowerCase().replace(/ing$/,'').slice(0,5);
 
-  // Argument/Evaluation → using (texts/data/lab) or with (media/maps/visuals)
-  if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
-    if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
-    if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
-  }
+    function refineTopic(t){
+      t = (t||"").trim();
+      if(!t) return t;
+      if (/^causes\b/i.test(t)) t = "the " + t;
+      if (/^effects\b/i.test(t)) t = "the " + t;
+      if (/^impact\b/i.test(t)) t = "the " + t;
+      if (/^factors\b/i.test(t)) t = "the " + t;
+      if (/^features\b/i.test(t)) t = "the " + t;
+      t = t.replace(/\bof\s+(?!the\b)([A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z][A-Za-z0-9'’\-]*)*)/g, "of the $1");
+      return t;
+    }
 
-  // Citation-like gerunds
-  if (/(citing|quoting|drawing from|sourcing)/.test(g)) {
-    return `by ${gerund} from ${resNP}`;
-  }
+    function inferBloomFromText(topic, product){
+      const t = (topic||"").toLowerCase();
+      const p = (product||"").toLowerCase();
+      const checks = [
+        [/compare|contrast|categorize|differentiate|examine/, "Analyze"],
+        [/cause|effect|impact|argue|justify|prioritize|assess|rank/, "Evaluate"],
+        [/create|design|compose|produce|one-pager|slide|presentation/, "Create"],
+        [/apply|use|demonstrate|execute|implement|solve/, "Apply"],
+        [/explain|describe|summarize|interpret|classify/, "Understand"],
+        [/identify|list|define|recall|name|recognize/, "Remember"]
+      ];
+      let lt = "Analyze", lp = "Analyze";
+      for(const [re, lvl] of checks){ if(re.test(t)) { lt = lvl; break; } }
+      for(const [re, lvl] of checks){ if(re.test(p)) { lp = lvl; break; } }
+      return RANK[lp] >= RANK[lt] ? lp : lt;
+    }
 
-  // Fallbacks per category
-  switch (cat) {
-    case "texts":
-    case "data":
-    case "lab":
-      return `by ${gerund} using ${resNP}`;
-    case "media":
-    case "visuals":
-    case "maps":
-      return `by ${gerund} with ${resNP}`;
-    default:
-      return `by ${gerund} ${resNP}`;
-  }
-}
-    // Elements
-    const topicSel = document.getElementById('topic');
-    const topicCustom = document.getElementById('topicCustom');
-    const resourcesSel = document.getElementById('resources');
-    const resourcesCustom = document.getElementById('resourcesCustom');
-    const assessSel = document.getElementById('assessment');
-    const assessCustom = document.getElementById('assessmentCustom');
-    const bloomSel = document.getElementById('bloom');
-    const levelNum = document.getElementById('levelNum');
-    const preview = document.getElementById('preview');
-    const copyBtn = document.getElementById('copyBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const verbsList = document.getElementById('verbsList');
+    function chooseDifferentGerund(level, finiteVerb){
+      const opts = GERUNDS[level] || ["explaining"];
+      const fs = stem(finiteVerb);
+      for(const g of opts){ if(stem(g) !== fs) return g; }
+      return opts[0];
+    }
 
-    // Bloom helpers
-    const RANK = {Remember:1, Understand:2, Apply:3, Analyze:4, Evaluate:5, Create:6};
-    const rankToLevel = n => ({1:"Remember",2:"Understand",3:"Apply",4:"Analyze",5:"Evaluate",6:"Create"}[n]||"Analyze");
+    function chooseProductionVerb(assessment){
+      const a = (assessment||"").toLowerCase();
+      if (/paragraph|essay|cer|organizer|one-pager|list/.test(a)) return "produce";
+      if (/slide|presentation/.test(a)) return "create";
+      if (/timeline/.test(a)) return "construct";
+      if (/debate|claim/.test(a)) return "formulate";
+      return "produce";
+    }
 
-    function stem(s){ return (s||"").toLowerCase().replace(/ing$/,'').slice(0,5); }
+    // Read current values
+    function currentTopic(){ return (topicSel && topicSel.value) || ""; }
+    function currentResources(){
+      return (resourcesSel.value === "__custom__" ? resourcesCustom.value : resourcesSel.value) || "";
+    }
+    function currentAssessment(){
+      return (assessSel.value === "__custom__" ? assessCustom.value : assessSel.value) || "";
+    }
 
-    function refineTopic(t){
-      t = (t||"").trim();
-      if(!t) return t;
-      if (/^causes\b/i.test(t)) t = "the " + t;
-      if (/^effects\b/i.test(t)) t = "the " + t;
-      if (/^impact\b/i.test(t)) t = "the " + t;
-      if (/^factors\b/i.test(t)) t = "the " + t;
-      if (/^features\b/i.test(t)) t = "the " + t;
-      // insert "the" after "of" before Proper Noun sequences
-      t = t.replace(/\bof\s+(?!the\b)([A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z][A-Za-z0-9'’\-]*)*)/g, "of the $1");
-      return t;
-    }
+    function computeBloom(){
+      const lvMatch = (levelNum.value||"").match(/(\d)/);
+      if (lvMatch) {
+        const n = Math.max(1, Math.min(6, parseInt(lvMatch[1],10)));
+        return rankToLevel(n);
+      }
+      return bloomSel.value || "Analyze";
+    }
 
-    function articleize(phrase) {
-  if (!phrase) return "";
+    function generate(){
+      const topicRaw = currentTopic();
+      const topic = refineTopic(topicRaw);
+      const resourcesRaw = currentResources();
+      const assessmentRaw = currentAssessment();
 
-  // Don't add articles if it looks like a proper noun or already starts with "the" / "a"
-  if (/^(the|a|an)\s/i.test(phrase)) return phrase;
-  if (/^[A-Z]/.test(phrase) && !/\s/.test(phrase)) return phrase; // single capitalized word (e.g., Mesopotamia)
-  if (/^[A-Z]/.test(phrase) && /\sof\s/i.test(phrase)) return phrase; // phrases like "Achievements of Mesopotamia"
+      let level = computeBloom();
+      if (!level || level === "Auto") level = inferBloomFromText(topic, assessmentRaw);
 
-  // Otherwise, add articles
-  if (/s$/.test(phrase)) return "the " + phrase; // plurals → "the graphs"
-  return "a " + phrase; // singulars → "a graph"
-}
-    }
+      const finiteVerb = (VERBS[level] && VERBS[level][0]) || "Analyze";
+      const gerund = chooseDifferentGerund(level, finiteVerb);
+      const prodNP = articleize(assessmentRaw);
+      const prodVerb = chooseProductionVerb(assessmentRaw);
 
-    function inferBloomFromText(topic, product){
-      const t = (topic||"").toLowerCase();
-      const p = (product||"").toLowerCase();
-      const checks = [
-        [/compare|contrast|categorize|differentiate|examine/, "Analyze"],
-        [/cause|effect|impact|argue|justify|prioritize|assess|rank/, "Evaluate"],
-        [/create|design|compose|produce|one-pager|slide|presentation/, "Create"],
-        [/apply|use|demonstrate|execute|implement|solve/, "Apply"],
-        [/explain|describe|summarize|interpret|classify/, "Understand"],
-        [/identify|list|define|recall|name|recognize/, "Remember"]
-      ];
-      let lt = "Analyze", lp = "Analyze";
-      for(const [re, lvl] of checks){ if(re.test(t)) { lt = lvl; break; } }
-      for(const [re, lvl] of checks){ if(re.test(p)) { lp = lvl; break; } }
-      return RANK[lp] >= RANK[lt] ? lp : lt;
-    }
+      if (!topic) {
+        preview.innerHTML = '<span class="muted">Your objective will appear here…</span>';
+        copyBtn.disabled = true;
+        return;
+      }
 
-    function chooseDifferentGerund(level, finiteVerb){
-      const opts = GERUNDS[level] || ["explaining"];
-      const fs = stem(finiteVerb);
-      for(const g of opts){ if(stem(g) !== fs) return g; }
-      return opts[0];
-    }
+      const byClause = buildByClause(gerund, resourcesRaw);
+      const sentence = `Students will ${finiteVerb.toLowerCase()} ${topic} ${byClause} in order to ${prodVerb} ${prodNP}.`;
+      preview.textContent = sentence;
+      copyBtn.disabled = false;
+    }
 
-    function chooseProductionVerb(assessment){
-      const a = (assessment||"").toLowerCase();
-      if (/paragraph|essay|cer|organizer|one-pager|list/.test(a)) return "produce";
-      if (/slide|presentation/.test(a)) return "create";
-      if (/timeline/.test(a)) return "construct";
-      if (/debate|claim/.test(a)) return "formulate";
-      return "produce";
-    }
+    // Bloom verbs UI
+    function renderVerbs(){
+      const container = verbsList;
+      container.innerHTML = "";
+      Object.keys(VERBS).forEach(level=>{
+        const details = document.createElement('details');
+        const summary = document.createElement('summary');
+        summary.textContent = level + " — click to select";
+        details.appendChild(summary);
+        const p = document.createElement('p');
+        p.textContent = VERBS[level].join(", ");
+        details.appendChild(p);
+        details.addEventListener('toggle', ()=>{
+          if(details.open){ bloomSel.value = level; generate(); }
+        });
+        container.appendChild(details);
+      });
+    }
 
-    function currentTopic(){
-      return (topicSel.value === "__custom__" ? topicCustom.value : topicSel.value) || "";
-    }
-    function currentResources(){
-      return (resourcesSel.value === "__custom__" ? resourcesCustom.value : resourcesSel.value) || "";
-    }
-    function currentAssessment(){
-      return (assessSel.value === "__custom__" ? assessCustom.value : assessSel.value) || "";
-    }
+    // Show/hide custom fields for selects
+    function toggleCustom(sel, inputEl){
+      if (sel.value === "__custom__") {
+        inputEl.style.display = "";
+      } else {
+        inputEl.style.display = "none";
+        inputEl.value = "";
+      }
+      generate();
+    }
 
-    function computeBloom(){
-      const lvMatch = (levelNum.value||"").match(/(\d)/);
-      if (lvMatch) {
-        const n = Math.max(1, Math.min(6, parseInt(lvMatch[1],10)));
-        return rankToLevel(n);
-      }
-      return bloomSel.value || "Analyze";
-    }
+    // Events
+    [
+      topicSel, resourcesSel, assessSel, bloomSel, levelNum,
+      resourcesCustom, assessCustom
+    ].filter(Boolean).forEach(el=>{
+      const evt = el.tagName === "SELECT" ? "change" : "input";
+      el.addEventListener(evt, generate);
+    });
 
-    function generate(){
-      const topicRaw = currentTopic();
-      const topic = refineTopic(topicRaw);
-      const resourcesRaw = currentResources();
-      const assessmentRaw = currentAssessment();
+    resourcesSel.addEventListener('change', ()=>toggleCustom(resourcesSel, resourcesCustom));
+    assessSel.addEventListener('change', ()=>toggleCustom(assessSel, assessCustom));
 
-      // Final Bloom level: honor dropdown or numeric override; or infer from content
-      let level = computeBloom();
-      if (!level || level === "Auto") level = inferBloomFromText(topic, assessmentRaw);
+    copyBtn.addEventListener('click', async ()=>{
+      const text = preview.textContent || "";
+      try { await navigator.clipboard.writeText(text); } catch(e) {}
+    });
 
-      const finiteVerb = (VERBS[level] && VERBS[level][0]) || "Analyze";
-      const gerund = chooseDifferentGerund(level, finiteVerb);
-      const resNP = articleize(resourcesRaw);
-      const prodNP = articleize(assessmentRaw);
-      const prodVerb = chooseProductionVerb(assessmentRaw);
+    resetBtn.addEventListener('click', ()=>{
+      topicSel.value = "the causes of the French Revolution";
+      resourcesSel.value = "primary sources";
+      resourcesCustom.value = "";
+      resourcesCustom.style.display = "none";
+      assessSel.value = "a written paragraph";
+      assessCustom.value = "";
+      assessCustom.style.display = "none";
+      bloomSel.value = "Evaluate";
+      levelNum.value = "";
+      generate();
+    });
 
-      if (!topic) {
-        preview.innerHTML = '<span class="muted">Your objective will appear here…</span>';
-        copyBtn.disabled = true;
-        return;
-      }
-
-      const byClause = buildByClause(gerund, resourcesRaw);
-const sentence = `Students will ${finiteVerb.toLowerCase()} ${topic} ${byClause} in order to ${prodVerb} ${prodNP}.`;
-      preview.textContent = sentence;
-      copyBtn.disabled = false;
-    }
-
-    // Build Bloom verbs UI
-    function renderVerbs(){
-      const container = verbsList;
-      container.innerHTML = "";
-      Object.keys(VERBS).forEach(level=>{
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.textContent = level + " — click to select";
-        details.appendChild(summary);
-        const p = document.createElement('p');
-        p.textContent = VERBS[level].join(", ");
-        details.appendChild(p);
-        details.addEventListener('toggle', (e)=>{
-          if(details.open){ bloomSel.value = level; generate(); }
-        });
-        container.appendChild(details);
-      });
-    }
-
-    // Wire up custom toggles
-    function toggleCustom(sel, inputEl){
-      if (sel.value === "__custom__") {
-        inputEl.style.display = "";
-      } else {
-        inputEl.style.display = "none";
-        inputEl.value = "";
-      }
-      generate();
-    }
-
-    // Events
-    [topicSel, resourcesSel, assessSel, bloomSel, levelNum, topicCustom, resourcesCustom, assessCustom]
-      .forEach(el => el.addEventListener('input', generate));
-
-    topicSel.addEventListener('change', ()=>toggleCustom(topicSel, topicCustom));
-    resourcesSel.addEventListener('change', ()=>toggleCustom(resourcesSel, resourcesCustom));
-    assessSel.addEventListener('change', ()=>toggleCustom(assessSel, assessCustom));
-
-    document.getElementById('copyBtn').addEventListener('click', async ()=>{
-      const text = preview.textContent || "";
-      try { await navigator.clipboard.writeText(text); } catch(e) {}
-    });
-    document.getElementById('resetBtn').addEventListener('click', ()=>{
-      topicSel.value = "the causes of the French Revolution";
-      topicCustom.value = "";
-      topicCustom.style.display = "none";
-      resourcesSel.value = "primary sources";
-      resourcesCustom.value = "";
-      resourcesCustom.style.display = "none";
-      assessSel.value = "a written paragraph";
-      assessCustom.value = "";
-      assessCustom.style.display = "none";
-      bloomSel.value = "Evaluate";
-      levelNum.value = "";
-      generate();
-    });
-
-    // Init
-    renderVerbs();
-    generate();
-  </script>
+    // Init
+    renderVerbs();
+    generate();
+  </script>
 </body>
 </html>
