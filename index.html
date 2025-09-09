@@ -164,6 +164,40 @@
       Create: ["designing","composing","producing","creating","developing"]
     };
 // Helpers for smarter grammar
+function isMassOrPlural(s) {
+  const x = (s || "").trim().toLowerCase();
+  if (!x) return false;
+
+  // Mass nouns that should never get "a"/"an"
+  if (/\b(evidence|research|information|homework|equipment|literature|news|progress|energy|scaffolding)\b/.test(x)) return true;
+
+  // Common plurals or treated-as-plural
+  if (/\bdata\b/.test(x)) return true;
+  if (/\b(results|sources|maps|graphs|charts|tables|notes|clips|studies|images|articles)\b/.test(x)) return true;
+
+  // Ends in "s" (but not words like analysis/thesis)
+  if (/\w+s\b/.test(x) && !/\b(analysis|thesis|basis|crisis|hypothesis)\b/.test(x)) return true;
+
+  return false;
+}
+
+function articleize(phrase) {
+  const s = (phrase || "").trim();
+  if (!s) return "";
+
+  // Already has article/determiner
+  if (/^(the|a|an|some|any|this|that|these|those|my|your|his|her|our|their)\s/i.test(s)) return s;
+
+  // Proper nouns/titles (capitalized or "of" phrases)
+  if (/^[A-Z]/.test(s) && /\bof\b/i.test(s)) return s;
+  if (/^[A-Z][A-Za-z-]+$/.test(s)) return s;
+
+  // Mass or plural → no article
+  if (isMassOrPlural(s)) return s;
+
+  // Default: add article
+  return /^[aeiou]/i.test(s) ? `an ${s}` : `a ${s}`;
+}
 function classifyResource(res) {
   const r = (res || "").toLowerCase();
   if (!r) return "none";
@@ -183,9 +217,37 @@ function buildByClause(gerund, resourcesRaw) {
 
   const cat = classifyResource(resourcesRaw);
 
+  // Analysis verbs → direct object; no preposition; no article for mass/plural
   if (/(examining|analyzing|comparing|contrasting|categorizing)/.test(g)) {
-    return `by ${gerund} ${resNP}`;
+    const np = isMassOrPlural(resourcesRaw) ? resourcesRaw : articleize(resourcesRaw);
+    return `by ${gerund} ${np}`;
   }
+
+  // Argument/Evaluation → using (texts/data/lab) or with (media/maps/visuals)
+  if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
+    if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
+    if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
+  }
+
+  // Citation-like gerunds
+  if (/(citing|quoting|drawing from|sourcing)/.test(g)) {
+    return `by ${gerund} from ${resNP}`;
+  }
+
+  // Fallbacks per category
+  switch (cat) {
+    case "texts":
+    case "data":
+    case "lab":
+      return `by ${gerund} using ${resNP}`;
+    case "media":
+    case "visuals":
+    case "maps":
+      return `by ${gerund} with ${resNP}`;
+    default:
+      return `by ${gerund} ${resNP}`;
+  }
+}
 
   if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
     if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
@@ -242,12 +304,18 @@ function buildByClause(gerund, resourcesRaw) {
       return t;
     }
 
-    function articleize(s){
-      s = (s||"").trim();
-      if(!s) return "";
-      if (/^(a|an|the)\s+/i.test(s)) return s;
-      if (/\b(s|es)\b$/.test(s) || /\b(s|es)$/.test(s) || /\b(sources|data|results|clips|studies|notes|citations|functions|stories)\b/i.test(s)) return s; // plurals/mass
-      return /^[aeiou]/i.test(s) ? "an " + s : "a " + s;
+    function articleize(phrase) {
+  if (!phrase) return "";
+
+  // Don't add articles if it looks like a proper noun or already starts with "the" / "a"
+  if (/^(the|a|an)\s/i.test(phrase)) return phrase;
+  if (/^[A-Z]/.test(phrase) && !/\s/.test(phrase)) return phrase; // single capitalized word (e.g., Mesopotamia)
+  if (/^[A-Z]/.test(phrase) && /\sof\s/i.test(phrase)) return phrase; // phrases like "Achievements of Mesopotamia"
+
+  // Otherwise, add articles
+  if (/s$/.test(phrase)) return "the " + phrase; // plurals → "the graphs"
+  return "a " + phrase; // singulars → "a graph"
+}
     }
 
     function inferBloomFromText(topic, product){
