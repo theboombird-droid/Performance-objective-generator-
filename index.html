@@ -37,17 +37,8 @@
       <div>
         <div class="card"><div class="content">
           <div class="row">
-            <label for="topic">Content Topic</label>
-            <select id="topic">
-              <option>the causes of the French Revolution</option>
-              <option>cell structure and function</option>
-              <option>supply and demand</option>
-              <option>quadratic functions</option>
-              <option>the theme in short stories</option>
-              <option>photosynthesis</option>
-              <option value="__custom__">Custom…</option>
-            </select>
-            <input id="topicCustom" placeholder="Type a custom topic" style="display:none" />
+         <label for="topic">Content Topic</label>
+<input type="text" id="topic" placeholder="e.g., Causes of the French Revolution" />
           </div>
 
           <div class="row">
@@ -158,7 +149,52 @@
       Evaluate: ["arguing","justifying","defending","prioritizing","assessing","appraising"],
       Create: ["designing","composing","producing","creating","developing"]
     };
+// Helpers for smarter grammar
+function classifyResource(res) {
+  const r = (res || "").toLowerCase();
+  if (!r) return "none";
+  if (/primary sources|sources?|documents?|textbook|articles?|excerpts?|readings?/.test(r)) return "texts";
+  if (/data|dataset|statistics|stats|table|chart|graph|figures?/.test(r)) return "data";
+  if (/map|atlas|geograph/.test(r)) return "maps";
+  if (/video|clip|audio|podcast|recording/.test(r)) return "media";
+  if (/image|photo|cartoon|diagram|poster|picture|visual/.test(r)) return "visuals";
+  if (/lab|experiment|results?/.test(r)) return "lab";
+  return "generic";
+}
 
+function buildByClause(gerund, resourcesRaw) {
+  const g = (gerund || "").toLowerCase();
+  const resNP = articleize(resourcesRaw);
+  if (!resourcesRaw) return `by ${gerund}`;
+
+  const cat = classifyResource(resourcesRaw);
+
+  if (/(examining|analyzing|comparing|contrasting|categorizing)/.test(g)) {
+    return `by ${gerund} ${resNP}`;
+  }
+
+  if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
+    if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
+    if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
+  }
+
+  if (/(citing|quoting|drawing from|sourcing)/.test(g)) {
+    return `by ${gerund} from ${resNP}`;
+  }
+
+  switch (cat) {
+    case "texts":
+    case "data":
+    case "lab":
+      return `by ${gerund} using ${resNP}`;
+    case "media":
+    case "visuals":
+    case "maps":
+      return `by ${gerund} with ${resNP}`;
+    default:
+      return `by ${gerund} ${resNP}`;
+  }
+}
     // Elements
     const topicSel = document.getElementById('topic');
     const topicCustom = document.getElementById('topicCustom');
@@ -274,7 +310,8 @@
         return;
       }
 
-      const sentence = `Students will ${finiteVerb.toLowerCase()} ${topic} by ${gerund} ${resNP} in order to ${prodVerb} ${prodNP}.`;
+      const byClause = buildByClause(gerund, resourcesRaw);
+const sentence = `Students will ${finiteVerb.toLowerCase()} ${topic} ${byClause} in order to ${prodVerb} ${prodNP}.`;
       preview.textContent = sentence;
       copyBtn.disabled = false;
     }
