@@ -145,273 +145,296 @@
     </div>
   </div>
 
-  <script>
-    /* --- show any JS error in the preview (handy on mobile) --- */
-    window.addEventListener("error", (e) => {
-      const p = document.getElementById("preview");
-      if (p) p.textContent = "Error: " + (e.error?.message || e.message);
-    });
+<script>
+  /* -----------------------------
+     Data
+  ----------------------------- */
+  const VERBS = {
+    Remember:  ["Identify","Recall","List","Define","Name","Recognize"],
+    Understand:["Explain","Describe","Summarize","Interpret","Classify","Discuss"],
+    Apply:     ["Apply","Demonstrate","Use","Execute","Implement","Solve"],
+    Analyze:   ["Analyze","Examine","Compare","Contrast","Differentiate","Categorize"],
+    Evaluate:  ["Evaluate","Argue","Justify","Defend","Prioritize","Assess","Appraise"],
+    Create:    ["Create","Design","Compose","Develop","Construct","Produce"]
+  };
 
-    // Data
-    const VERBS = {
-      Remember: ["Identify","Recall","List","Define","Name","Recognize"],
-      Understand: ["Explain","Describe","Summarize","Interpret","Classify","Discuss"],
-      Apply: ["Apply","Demonstrate","Use","Execute","Implement","Solve"],
-      Analyze: ["Analyze","Examine","Compare","Contrast","Differentiate","Categorize"],
-      Evaluate: ["Evaluate","Argue","Justify","Defend","Prioritize","Assess","Appraise"],
-      Create: ["Create","Design","Compose","Develop","Construct","Produce"]
-    };
-    const GERUNDS = {
-      Remember: ["recalling","listing","naming"],
-      Understand: ["explaining","summarizing","describing"],
-      Apply: ["demonstrating","applying","using"],
-      Analyze: ["examining","comparing","contrasting","categorizing"],
-      Evaluate: ["arguing","justifying","defending","prioritizing","assessing","appraising"],
-      Create: ["designing","composing","producing","creating","developing"]
-    };
+  const GERUNDS = {
+    Remember:  ["recalling","listing","naming"],
+    Understand:["explaining","summarizing","describing"],
+    Apply:     ["demonstrating","applying","using"],
+    Analyze:   ["examining","comparing","contrasting","categorizing","analyzing"],
+    // reordered so neutral choices come first
+    Evaluate:  ["assessing","appraising","arguing","justifying","defending","prioritizing"],
+    Create:    ["designing","composing","producing","creating","developing"]
+  };
 
-    // Grammar helpers
-    function isMassOrPlural(s) {
-      const x = (s || "").trim().toLowerCase();
-      if (!x) return false;
-      if (/\b(evidence|research|information|homework|equipment|literature|news|progress|energy|scaffolding)\b/.test(x)) return true;
-      if (/\bdata\b/.test(x)) return true;
-      if (/\b(results|sources|maps|graphs|charts|tables|notes|clips|studies|images|articles)\b/.test(x)) return true;
-      if (/\w+s\b/.test(x) && !/\b(analysis|thesis|basis|crisis|hypothesis)\b/.test(x)) return true;
-      return false;
+  /* -----------------------------
+     Helpers: articles, mass/plural, resource classes
+  ----------------------------- */
+  function isMassOrPlural(s) {
+    const x = (s || "").trim().toLowerCase();
+    if (!x) return false;
+    if (/\b(evidence|research|information|homework|equipment|literature|news|progress|energy|scaffolding)\b/.test(x)) return true;
+    if (/\bdata\b/.test(x)) return true;
+    if (/\b(results|sources|maps|graphs|charts|tables|notes|clips|studies|images|articles)\b/.test(x)) return true;
+    if (/\w+s\b/.test(x) && !/\b(analysis|thesis|basis|crisis|hypothesis)\b/.test(x)) return true;
+    return false;
+  }
+
+  function articleize(phrase) {
+    const s = (phrase || "").trim();
+    if (!s) return "";
+    if (/^(the|a|an|some|any|this|that|these|those|my|your|his|her|our|their)\s/i.test(s)) return s;
+    if (/^[A-Z]/.test(s) && /\bof\b/i.test(s)) return s;          // e.g., "Achievements of Mesopotamia"
+    if (/^[A-Z][A-Za-z-]+$/.test(s)) return s;                     // single proper noun
+    if (isMassOrPlural(s)) return s;                               // no article for mass/plural
+    return /^[aeiou]/i.test(s) ? `an ${s}` : `a ${s}`;
+  }
+
+  function refineTopic(t){
+    t = (t||"").trim();
+    if(!t) return t;
+    if (/^causes\b/i.test(t)) t = "the " + t;
+    if (/^effects\b/i.test(t)) t = "the " + t;
+    if (/^impact\b/i.test(t)) t = "the " + t;
+    if (/^factors\b/i.test(t)) t = "the " + t;
+    if (/^features\b/i.test(t)) t = "the " + t;
+    // Insert "the" after "of" before Proper Noun sequences
+    t = t.replace(/\bof\s+(?!the\b)([A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z][A-Za-z0-9'’\-]*)*)/g, "of the $1");
+    return t;
+  }
+
+  function classifyResource(res) {
+    const r = (res || "").toLowerCase();
+    if (!r) return "none";
+    if (/primary sources|sources?|documents?|textbook|articles?|excerpts?|readings?/.test(r)) return "texts";
+    if (/data|dataset|statistics|stats|table|chart|graph|figures?/.test(r)) return "data";
+    if (/map|atlas|geograph/.test(r)) return "maps";
+    if (/video|clip|audio|podcast|recording/.test(r)) return "media";
+    if (/image|photo|cartoon|diagram|poster|picture|visual/.test(r)) return "visuals";
+    if (/lab|experiment|results?/.test(r)) return "lab";
+    return "generic";
+  }
+
+  /* -----------------------------
+     Build "by ..." clause (grammar-aware)
+  ----------------------------- */
+  function buildByClause(gerund, resourcesRaw) {
+    const g = (gerund || "").toLowerCase();
+    const resNP = articleize(resourcesRaw);
+    if (!resourcesRaw) return `by ${gerund}`;
+
+    const cat = classifyResource(resourcesRaw);
+
+    // Analysis verbs → direct object; no preposition; keep mass/plural as-is
+    if (/(examining|analyzing|comparing|contrasting|categorizing)/.test(g)) {
+      const np = isMassOrPlural(resourcesRaw) ? resourcesRaw : resNP;
+      return `by ${gerund} ${np}`;
     }
 
-    function articleize(phrase) {
-      const s = (phrase || "").trim();
-      if (!s) return "";
-      if (/^(the|a|an|some|any|this|that|these|those|my|your|his|her|our|their)\s/i.test(s)) return s;
-      if (/^[A-Z]/.test(s) && /\bof\b/i.test(s)) return s;        // "Causes of Rome"
-      if (/^[A-Z][A-Za-z-]+$/.test(s)) return s;                   // "Mesopotamia"
-      if (isMassOrPlural(s)) return s;                             // mass/plural
-      return /^[aeiou]/i.test(s) ? `an ${s}` : `a ${s}`;           // default
+    // Argument/Evaluation → using (texts/data/lab) or with (media/maps/visuals)
+    if (/(arguing|justifying|defending|prioritizing)/.test(g)) {
+      if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
+      if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
     }
 
-    function classifyResource(res) {
-      const r = (res || "").toLowerCase();
-      if (!r) return "none";
-      if (/primary sources|sources?|documents?|textbook|articles?|excerpts?|readings?/.test(r)) return "texts";
-      if (/data|dataset|statistics|stats|table|chart|graph|figures?/.test(r)) return "data";
-      if (/map|atlas|geograph/.test(r)) return "maps";
-      if (/video|clip|audio|podcast|recording/.test(r)) return "media";
-      if (/image|photo|cartoon|diagram|poster|picture|visual/.test(r)) return "visuals";
-      if (/lab|experiment|results?/.test(r)) return "lab";
-      return "generic";
+    // Citation-like gerunds
+    if (/(citing|quoting|drawing from|sourcing)/.test(g)) return `by ${gerund} from ${resNP}`;
+
+    // Fallbacks per category
+    switch (cat) {
+      case "texts":
+      case "data":
+      case "lab":
+        return `by ${gerund} using ${resNP}`;
+      case "media":
+      case "visuals":
+      case "maps":
+        return `by ${gerund} with ${resNP}`;
+      default:
+        return `by ${gerund} ${resNP}`;
     }
+  }
 
-    function buildByClause(gerund, resourcesRaw) {
-      const g = (gerund || "").toLowerCase();
-      const resNP = articleize(resourcesRaw);
-      if (!resourcesRaw) return `by ${gerund}`;
+  /* -----------------------------
+     NEW: pickGerundSmart (contextual)
+  ----------------------------- */
+  function pickGerundSmart(level, finiteVerb, resourcesRaw) {
+    const options = GERUNDS[level] || ["explaining"];
+    const stem = (finiteVerb || "").toLowerCase().slice(0,4);
 
-      const cat = classifyResource(resourcesRaw);
-
-      // Analysis verbs → direct object; no preposition; mass/plural keeps no article
-      if (/(examining|analyzing|comparing|contrasting|categorizing)/.test(g)) {
-        const np = isMassOrPlural(resourcesRaw) ? resourcesRaw : articleize(resourcesRaw);
-        return `by ${gerund} ${np}`;
+    // Evaluate + evidence/data/research → prefer assessing/appraising
+    if (level === "Evaluate") {
+      const r = (resourcesRaw || "").toLowerCase();
+      if (/(evidence|data|research|results|sources|studies)/.test(r)) {
+        return "assessing";
       }
-
-      // Argument/Evaluation → using (texts/data/lab) or with (media/maps/visuals)
-      if (/(arguing|justifying|defending|prioritizing|assessing|appraising|evaluating)/.test(g)) {
-        if (cat === "texts" || cat === "data" || cat === "lab") return `by ${gerund} using ${resNP}`;
-        if (cat === "media" || cat === "visuals" || cat === "maps") return `by ${gerund} with ${resNP}`;
-      }
-
-      // Citation-like gerunds
-      if (/(citing|quoting|drawing from|sourcing)/.test(g)) {
-        return `by ${gerund} from ${resNP}`;
-      }
-
-      // Fallbacks
-      switch (cat) {
-        case "texts":
-        case "data":
-        case "lab":
-          return `by ${gerund} using ${resNP}`;
-        case "media":
-        case "visuals":
-        case "maps":
-          return `by ${gerund} with ${resNP}`;
-        default:
-          return `by ${gerund} ${resNP}`;
-      }
     }
 
-    // Elements
-    const topicSel = document.getElementById('topic');
-    const resourcesSel = document.getElementById('resources');
-    const resourcesCustom = document.getElementById('resourcesCustom');
-    const assessSel = document.getElementById('assessment');
-    const assessCustom = document.getElementById('assessmentCustom');
-    const bloomSel = document.getElementById('bloom');
-    const levelNum = document.getElementById('levelNum');
-    const preview = document.getElementById('preview');
-    const copyBtn = document.getElementById('copyBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    const verbsList = document.getElementById('verbsList');
+    // Avoid repeating the same stem as the finite verb
+    const nonRedundant = options.find(g => !g.toLowerCase().startsWith(stem));
+    return nonRedundant || options[0];
+  }
 
-    // Bloom helpers
-    const RANK = {Remember:1, Understand:2, Apply:3, Analyze:4, Evaluate:5, Create:6};
-    const rankToLevel = n => ({1:"Remember",2:"Understand",3:"Apply",4:"Analyze",5:"Evaluate",6:"Create"}[n]||"Analyze");
-    const stem = s => (s||"").toLowerCase().replace(/ing$/,'').slice(0,5);
+  /* -----------------------------
+     Bloom helpers
+  ----------------------------- */
+  const RANK = {Remember:1, Understand:2, Apply:3, Analyze:4, Evaluate:5, Create:6};
+  const rankToLevel = n => ({1:"Remember",2:"Understand",3:"Apply",4:"Analyze",5:"Evaluate",6:"Create"}[n]||"Analyze");
 
-    function refineTopic(t){
-      t = (t||"").trim();
-      if(!t) return t;
-      if (/^causes\b/i.test(t)) t = "the " + t;
-      if (/^effects\b/i.test(t)) t = "the " + t;
-      if (/^impact\b/i.test(t)) t = "the " + t;
-      if (/^factors\b/i.test(t)) t = "the " + t;
-      if (/^features\b/i.test(t)) t = "the " + t;
-      t = t.replace(/\bof\s+(?!the\b)([A-Z][A-Za-z0-9'’\-]*(?:\s+[A-Z][A-Za-z0-9'’\-]*)*)/g, "of the $1");
-      return t;
+  function inferBloomFromText(topic, product){
+    const t = (topic||"").toLowerCase();
+    const p = (product||"").toLowerCase();
+    const checks = [
+      [/compare|contrast|categorize|differentiate|examine/, "Analyze"],
+      [/cause|effect|impact|argue|justify|prioritize|assess|rank|evaluate/, "Evaluate"],
+      [/create|design|compose|produce|one-pager|slide|presentation/, "Create"],
+      [/apply|use|demonstrate|execute|implement|solve/, "Apply"],
+      [/explain|describe|summarize|interpret|classify/, "Understand"],
+      [/identify|list|define|recall|name|recognize/, "Remember"]
+    ];
+    let lt = "Analyze", lp = "Analyze";
+    for(const [re, lvl] of checks){ if(re.test(t)) { lt = lvl; break; } }
+    for(const [re, lvl] of checks){ if(re.test(p)) { lp = lvl; break; } }
+    return RANK[lp] >= RANK[lt] ? lp : lt;
+  }
+
+  function chooseProductionVerb(assessment){
+    const a = (assessment||"").toLowerCase();
+    if (/paragraph|essay|cer|organizer|one-pager|list|proof/.test(a)) return "produce";
+    if (/slide|presentation/.test(a)) return "create";
+    if (/timeline/.test(a)) return "construct";
+    if (/debate|claim/.test(a)) return "formulate";
+    if (/model|derivation|analysis/.test(a)) return "develop";
+    return "produce";
+  }
+
+  /* -----------------------------
+     Elements
+  ----------------------------- */
+  const topicSel        = document.getElementById('topic');         // text input
+  const resourcesSel    = document.getElementById('resources');
+  const resourcesCustom = document.getElementById('resourcesCustom');
+  const assessSel       = document.getElementById('assessment');
+  const assessCustom    = document.getElementById('assessmentCustom');
+  const bloomSel        = document.getElementById('bloom');
+  const levelNum        = document.getElementById('levelNum');
+  const preview         = document.getElementById('preview');
+  const copyBtn         = document.getElementById('copyBtn');
+  const resetBtn        = document.getElementById('resetBtn');
+  const verbsList       = document.getElementById('verbsList');
+
+  /* -----------------------------
+     Current values + compute Bloom
+  ----------------------------- */
+  function currentTopic(){ return (topicSel.value || "").trim(); }
+  function currentResources(){
+    return (resourcesSel.value === "__custom__" ? resourcesCustom.value : resourcesSel.value) || "";
+  }
+  function currentAssessment(){
+    return (assessSel.value === "__custom__" ? assessCustom.value : assessSel.value) || "";
+  }
+
+  function computeBloom(){
+    const m = (levelNum.value||"").match(/(\d)/);
+    if (m) return rankToLevel(Math.max(1, Math.min(6, parseInt(m[1],10))));
+    return bloomSel.value || "Analyze";
+  }
+
+  /* -----------------------------
+     Generate sentence
+  ----------------------------- */
+  function generate(){
+    const topicRaw      = currentTopic();
+    const topic         = refineTopic(topicRaw);
+    const resourcesRaw  = currentResources();
+    const assessmentRaw = currentAssessment();
+
+    let level = computeBloom();
+    if (!level || level === "Auto") level = inferBloomFromText(topic, assessmentRaw);
+
+    const finiteVerb = (VERBS[level] && VERBS[level][0]) || "Analyze";
+    const gerund     = pickGerundSmart(level, finiteVerb, resourcesRaw);
+    const prodNP     = articleize(assessmentRaw);
+    const prodVerb   = chooseProductionVerb(assessmentRaw);
+
+    if (!topic) {
+      preview.innerHTML = '<span class="muted">Your objective will appear here…</span>';
+      copyBtn.disabled = true;
+      return;
     }
 
-    function inferBloomFromText(topic, product){
-      const t = (topic||"").toLowerCase();
-      const p = (product||"").toLowerCase();
-      const checks = [
-        [/compare|contrast|categorize|differentiate|examine/, "Analyze"],
-        [/cause|effect|impact|argue|justify|prioritize|assess|rank/, "Evaluate"],
-        [/create|design|compose|produce|one-pager|slide|presentation/, "Create"],
-        [/apply|use|demonstrate|execute|implement|solve/, "Apply"],
-        [/explain|describe|summarize|interpret|classify/, "Understand"],
-        [/identify|list|define|recall|name|recognize/, "Remember"]
-      ];
-      let lt = "Analyze", lp = "Analyze";
-      for(const [re, lvl] of checks){ if(re.test(t)) { lt = lvl; break; } }
-      for(const [re, lvl] of checks){ if(re.test(p)) { lp = lvl; break; } }
-      return RANK[lp] >= RANK[lt] ? lp : lt;
-    }
+    const byClause = buildByClause(gerund, resourcesRaw);
+    const sentence = `Students will ${finiteVerb.toLowerCase()} ${topic} ${byClause} in order to ${prodVerb} ${prodNP}.`;
+    preview.textContent = sentence;
+    copyBtn.disabled = false;
+  }
 
-    function chooseDifferentGerund(level, finiteVerb){
-      const opts = GERUNDS[level] || ["explaining"];
-      const fs = stem(finiteVerb);
-      for(const g of opts){ if(stem(g) !== fs) return g; }
-      return opts[0];
-    }
-
-    function chooseProductionVerb(assessment){
-      const a = (assessment||"").toLowerCase();
-      if (/paragraph|essay|cer|organizer|one-pager|list/.test(a)) return "produce";
-      if (/slide|presentation/.test(a)) return "create";
-      if (/timeline/.test(a)) return "construct";
-      if (/debate|claim/.test(a)) return "formulate";
-      return "produce";
-    }
-
-    // Read current values
-    function currentTopic(){ return (topicSel && topicSel.value) || ""; }
-    function currentResources(){
-      return (resourcesSel.value === "__custom__" ? resourcesCustom.value : resourcesSel.value) || "";
-    }
-    function currentAssessment(){
-      return (assessSel.value === "__custom__" ? assessCustom.value : assessSel.value) || "";
-    }
-
-    function computeBloom(){
-      const lvMatch = (levelNum.value||"").match(/(\d)/);
-      if (lvMatch) {
-        const n = Math.max(1, Math.min(6, parseInt(lvMatch[1],10)));
-        return rankToLevel(n);
-      }
-      return bloomSel.value || "Analyze";
-    }
-
-    function generate(){
-      const topicRaw = currentTopic();
-      const topic = refineTopic(topicRaw);
-      const resourcesRaw = currentResources();
-      const assessmentRaw = currentAssessment();
-
-      let level = computeBloom();
-      if (!level || level === "Auto") level = inferBloomFromText(topic, assessmentRaw);
-
-      const finiteVerb = (VERBS[level] && VERBS[level][0]) || "Analyze";
-      const gerund = chooseDifferentGerund(level, finiteVerb);
-      const prodNP = articleize(assessmentRaw);
-      const prodVerb = chooseProductionVerb(assessmentRaw);
-
-      if (!topic) {
-        preview.innerHTML = '<span class="muted">Your objective will appear here…</span>';
-        copyBtn.disabled = true;
-        return;
-      }
-
-      const byClause = buildByClause(gerund, resourcesRaw);
-      const sentence = `Students will ${finiteVerb.toLowerCase()} ${topic} ${byClause} in order to ${prodVerb} ${prodNP}.`;
-      preview.textContent = sentence;
-      copyBtn.disabled = false;
-    }
-
-    // Bloom verbs UI
-    function renderVerbs(){
-      const container = verbsList;
-      container.innerHTML = "";
-      Object.keys(VERBS).forEach(level=>{
-        const details = document.createElement('details');
-        const summary = document.createElement('summary');
-        summary.textContent = level + " — click to select";
-        details.appendChild(summary);
-        const p = document.createElement('p');
-        p.textContent = VERBS[level].join(", ");
-        details.appendChild(p);
-        details.addEventListener('toggle', ()=>{
-          if(details.open){ bloomSel.value = level; generate(); }
-        });
-        container.appendChild(details);
+  /* -----------------------------
+     Bloom verbs UI (click to select level)
+  ----------------------------- */
+  function renderVerbs(){
+    const container = verbsList;
+    container.innerHTML = "";
+    Object.keys(VERBS).forEach(level=>{
+      const details = document.createElement('details');
+      const summary = document.createElement('summary');
+      summary.textContent = level + " — click to select";
+      details.appendChild(summary);
+      const p = document.createElement('p');
+      p.textContent = VERBS[level].join(", ");
+      details.appendChild(p);
+      details.addEventListener('toggle', ()=>{
+        if(details.open){ bloomSel.value = level; generate(); }
       });
+      container.appendChild(details);
+    });
+  }
+
+  /* -----------------------------
+     Custom-field toggle (resources/assessment)
+  ----------------------------- */
+  function toggleCustom(sel, inputEl){
+    if (sel.value === "__custom__") {
+      inputEl.style.display = "";
+    } else {
+      inputEl.style.display = "none";
+      inputEl.value = "";
     }
-
-    // Show/hide custom fields for selects
-    function toggleCustom(sel, inputEl){
-      if (sel.value === "__custom__") {
-        inputEl.style.display = "";
-      } else {
-        inputEl.style.display = "none";
-        inputEl.value = "";
-      }
-      generate();
-    }
-
-    // Events
-    [
-      topicSel, resourcesSel, assessSel, bloomSel, levelNum,
-      resourcesCustom, assessCustom
-    ].filter(Boolean).forEach(el=>{
-      const evt = el.tagName === "SELECT" ? "change" : "input";
-      el.addEventListener(evt, generate);
-    });
-
-    resourcesSel.addEventListener('change', ()=>toggleCustom(resourcesSel, resourcesCustom));
-    assessSel.addEventListener('change', ()=>toggleCustom(assessSel, assessCustom));
-
-    copyBtn.addEventListener('click', async ()=>{
-      const text = preview.textContent || "";
-      try { await navigator.clipboard.writeText(text); } catch(e) {}
-    });
-
-    resetBtn.addEventListener('click', ()=>{
-      topicSel.value = "the causes of the French Revolution";
-      resourcesSel.value = "primary sources";
-      resourcesCustom.value = "";
-      resourcesCustom.style.display = "none";
-      assessSel.value = "a written paragraph";
-      assessCustom.value = "";
-      assessCustom.style.display = "none";
-      bloomSel.value = "Evaluate";
-      levelNum.value = "";
-      generate();
-    });
-
-    // Init
-    renderVerbs();
     generate();
-  </script>
+  }
+
+  /* -----------------------------
+     Events
+  ----------------------------- */
+  [topicSel, resourcesSel, assessSel, bloomSel, levelNum, resourcesCustom, assessCustom]
+    .forEach(el => el.addEventListener('input', generate));
+
+  resourcesSel.addEventListener('change', ()=>toggleCustom(resourcesSel, resourcesCustom));
+  assessSel.addEventListener('change',   ()=>toggleCustom(assessSel, assessCustom));
+
+  copyBtn.addEventListener('click', async ()=>{
+    try { await navigator.clipboard.writeText(preview.textContent || ""); } catch(e) {}
+  });
+
+  resetBtn.addEventListener('click', ()=>{
+    topicSel.value        = "the causes of the French Revolution";
+    resourcesSel.value    = "primary sources";
+    resourcesCustom.value = "";
+    resourcesCustom.style.display = "none";
+    assessSel.value       = "a written paragraph";
+    assessCustom.value    = "";
+    assessCustom.style.display = "none";
+    bloomSel.value        = "Evaluate";
+    levelNum.value        = "";
+    generate();
+  });
+
+  /* -----------------------------
+     Init
+  ----------------------------- */
+  renderVerbs();
+  generate();
+</script>
 </body>
 </html>
